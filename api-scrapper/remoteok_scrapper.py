@@ -31,7 +31,20 @@ def get_job_postings():
         return res.json()
     except requests.exceptions.JSONDecodeError:
         raise Exception("Error: Respons API bukan JSON yang valid")
+    
+def jobs_to_xls(data):
+    wb = Workbook()
+    job_sheet = wb.add_sheet('Jobs')
+    headers = list(data[0].keys())
+    for i in range(0, len(headers)):
+        job_sheet.write(0, i, headers[i])
+    for i in range(0, len(data)):
+        job=data[i]
+        values = list(job.values())
+        for x in range(0, len(values)):
+            job_sheet.write(i+1, x, values[x])
+    wb.save('remote_job.xls')
 
 if __name__ == "__main__":
-    json = get_job_postings()[1]
-    print(json)
+    json = get_job_postings()[1:]
+    jobs_to_xls(json)
